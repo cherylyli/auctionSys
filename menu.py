@@ -8,9 +8,10 @@ def get_all_auctions(cur):
 				order by auctionendtime
 	""")
 	rows = cur.fetchall()
+
 	print("All ItemListings:")
 	for row in rows:
-		print(row)
+		print("Auction end time for item No.{} is {}.\nShort Item Description: \n{}\n".format(row[0], str(row[1]), str(row[2])))
 
 
 	return
