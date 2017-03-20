@@ -1,0 +1,18 @@
+<html>
+ 	<head>
+    	<title>{{ title }} - Auctions</title>
+  	</head>
+  	<body>
+      	<h1>Here are all the currently active auctions</h1>
+      	<h2>Click on one to see more</h2>
+      	<table>
+	      	{% for auction in auctions %}
+
+	    	<tr>
+	    		<td>{{ auction[1]}}</td>
+	    		<td><a href="/auction/{{auction[0]}}?email={{email}}">{{ auction[2] }}</a></td>
+	    	</tr>
+	    	{% endfor %}
+    	</table>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<html>
+ 	<head>
+    	<title>{{ title }} - Auctions</title>
+  	</head>
+  	<body>
+      	<h1>Auction #{{auction[0]}}</h1>
+        <p>Item Description: {{auction[3]}}</p>
+        <p>Auction End Time: {{auction[1]}}</p>
+        <h3>Owner:</h3>
+          <p>owner email: {{owner[0]}}</p>
+          <p>owner's rating: {{owner[1]}}/5</p>
+
+        <h2>Offers</h2>
+          {% for offer in offers %}
+            <p>${{offer[0]}} - {{offer[2]}} at {{offer[1]}}</p>
+
+          {% endfor %}
+
+        <h3>{{message}}</h3>
+        <p>Place a bid:</p>
+        <form action="/placebid" method="POST">
+          Amount:<input type="number" step='0.01' name="bid"><br>
+          <input type='hidden' name='email' value={{email}}>
+          <input type='hidden' name="auctionid" value={{auction[0]}}>
+          <input type="submit" value="Place Bid!">
+        </form>
+      	
+
+  </body>
+</html>
