@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for
 from app import app
 import psycopg2
 from time import gmtime, strftime
+import json
 
 #connect to db
 def connect_to_db():
@@ -110,7 +111,6 @@ def add_item():
     end_time_date = request.form['end_time_date']
     end_time_time = request.form['end_time_time']
     end_time = end_time_date + " " + end_time_time + ":00"
-    print(end_time)
 
     # check if current user is suspended
     cur.execute("select * from suspendedusers s where s.useremail='"+email+"';")
@@ -121,8 +121,6 @@ def add_item():
     # check if current user is a seller, if not, insert into sellers table
     cur.execute("select * from owners where email='"+email+"';")
     new_owner = cur.fetchone()
-
-    print(new_owner)
 
     if new_owner is None:
         try:
@@ -158,6 +156,39 @@ def add_item():
 @app.route('/history')
 def see_history():
     email = request.args.get('email')
+    offers = {}
+
+    # get all items that user has posted
+    try:
+        cur.execute("select itemid, auctionendtime, itemdescription from itemlistings where seller ='" + email + "';")
+        posted_items = cur.fetchall()
+        
+
+        for i in posted_items:
+            print(i[0])
+            print("Select amount, time, madebyuser from offers where itemid=" +str(i[0])+";")
+            cur.execute("Select amount, time, madebyuser from offers where itemid=" +str(i[0])+";")
+            offers_on_item = cur.fetchall()
+            offers[i[0]] = offers_on_item
+
+    except Exception, e:
+        print(e)
+
+    return render_template('history.html', email=email, posted_items=posted_items, offers=offers)
+
+@app.route('/changeitemdes', methods=['POST'])
+def change_itemDescription():
+    email = request.form['email']
+    item_description = request.form['item_description']
+    itemid = request.form['itemid']
+
+    try:
+        cur.execute("update \"itemlistings\" set itemdescription=\"" + item_description + "\" where itemid=" + str(itemid) + "")
+    except Exception, e:
+        print(e)
+
+    return redirect(url_for("see_history", email=email))
+
 
 
 
