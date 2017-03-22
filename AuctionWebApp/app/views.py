@@ -126,7 +126,7 @@ def add_item():
         try:
             print('insert into "owners" (email, numberratings, avgrating) values (\''+email+'\', 0, 0);')
             cur.execute('insert into "owners" (email, numberratings, avgrating) values (\''+email+'\', 0, 0);')
-        except Exception, e:
+        except Exception as e:
             return redirect(url_for("get_all_auctions", email=email, message=e))
 
     # check if current seller has >5 reviews and <3.0/5 rating    
@@ -144,7 +144,7 @@ def add_item():
     # add the item
     try:
         cur.execute("Insert into \"itemlistings\" values("+str(max_id)+",'"+str(end_time) + strftime("%z", gmtime())+"',"+ str(0) + ",'"+ item_description+ "','"+ email+ "',now() )")
-    except Exception, e:
+    except Exception as e:
         return redirect(url_for("get_all_auctions", email=email, message=e))
 
 
@@ -157,6 +157,7 @@ def add_item():
 def see_history():
     email = request.args.get('email')
     offers = {}
+    posted_items = []
 
     # get all items that user has posted
     try:
@@ -171,7 +172,7 @@ def see_history():
             offers_on_item = cur.fetchall()
             offers[i[0]] = offers_on_item
 
-    except Exception, e:
+    except Exception as e:
         print(e)
 
     return render_template('history.html', email=email, posted_items=posted_items, offers=offers)
@@ -183,8 +184,8 @@ def change_itemDescription():
     itemid = request.form['itemid']
 
     try:
-        cur.execute("update \"itemlistings\" set itemdescription=\"" + item_description + "\" where itemid=" + str(itemid) + "")
-    except Exception, e:
+        cur.execute("update \"itemlistings\" set itemdescription=\'" + item_description + "\' where itemid=" + str(itemid) + "")
+    except Exception as e:
         print(e)
 
     return redirect(url_for("see_history", email=email))

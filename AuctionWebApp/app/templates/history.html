@@ -1,5 +1,12 @@
 <html>
  	<head>
+      <style>
+      input[type=text]{
+        width: 200px;
+        height: 100px;
+      }
+
+      </style>
     	<title>{{email}}'s history</title>
   	</head>
   	<body>
@@ -7,16 +14,16 @@
       	<h2>Email: {{email}}</h2>
       	<h2>Items posted</h2>
       		{% for item in posted_items %}
-      		<h3>#{{item[0]}} <!-- <button>Edit item</button> --></h3>
+      		<h3>#{{item[0]}} <button class="{{item[0]}}">Edit item</button></h3>
       		<p>Auction end time: {{item[1]}}</p>
       		<p>Item Description: {{item[2]}}</p>
-      		<!-- <form action="/changeitemdes" method="POST">
+      		<form class="{{item[0]}}" action="/changeitemdes" method="POST" style="display: none">
       			New Item Description<input type="text" name="item_description"><br>
-      			New Auction End time<input type="date" name="end_time_date" value="{{item[1]}}"><input type="time" name="end_time_time" value="{{item[1]}}"><br>
+      			<!-- New Auction End time<input type="date" name="end_time_date" value="{{item[1]}}"><input type="time" name="end_time_time" value="{{item[1]}}"><br> -->
       			<input type="hidden" name="itemid" value="{{item[0]}}">
       			<input type="hidden" name="email" value="{{email}}">
       			<input type="submit" value="Submit Changes!">
-      		</form> -->
+      		</form>
 
 
       		<h4>Offers Received:</h4>
@@ -26,8 +33,20 @@
 	      		{% endfor %}
       		{% endfor %}
     </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript">
     	// bind event to button, on click, show text box with form
+      $(document).ready(function(){
+         var buttons = $('button');
+          $.each(buttons, function(){
+            var formSelector = "form." + this.className;
+            $(this).click(function(){
+              $(formSelector).toggle();
+            })
+          })
+      });
+
+
 
     </script>
 
