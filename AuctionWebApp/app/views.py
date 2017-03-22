@@ -11,9 +11,9 @@ def connect_to_db():
         cur = conn.cursor()
     except:
         print("I am unable to connect to the database")
-    return cur
+    return cur, conn
 
-cur = connect_to_db()
+cur, conn = connect_to_db()
 
 # prompt user to login
 @app.route('/')
@@ -27,6 +27,7 @@ def login():
     password = request.form['password']
     cur.execute("select * from users where users.email='"+email+"' and users.password='"+password+"';")
     user = cur.fetchall()
+
     if len(user) == 1:
         return redirect(url_for('get_all_auctions', email=email))
     else:
@@ -35,11 +36,9 @@ def login():
 # get all auctions
 @app.route('/auctions')
 def get_all_auctions():
-    cur.execute("""select itemid, auctionendtime, itemdescription
-                from itemlistings
-                where auctionendtime > now()
-                order by auctionendtime""")
+    cur.execute("select itemid, auctionendtime, itemdescription from itemlistings where auctionendtime > now() order by auctionendtime;")
     auctions = cur.fetchall()
+
     email = request.args.get('email')
     message = request.args.get('message')
     if message is None:
@@ -49,6 +48,7 @@ def get_all_auctions():
 # get owner's info, item's info, and bids on item 
 @app.route('/auction/<auctionid>')
 def get_detail_auction(auctionid):
+
     # get the item
     cur.execute("""select * from itemlistings where itemid="""+auctionid+""";""")
     auction_description = cur.fetchone()
@@ -65,11 +65,11 @@ def get_detail_auction(auctionid):
                 """)
     owner_description = cur.fetchone()
 
+
     email = request.args.get('email')
     message = request.args.get('message')
     if message is None:
         message = ""
-    print(message)
 
     return render_template('detailed_auction.html', title="auction", auction=auction_description, offers=offers, owner=owner_description, email=email, message=message)
 
@@ -81,16 +81,19 @@ def make_bid():
     email = request.form['email']
     bid = int(request.form['bid'])
 
+
     # check if current user is suspended
     cur.execute("select * from suspendedusers s where s.useremail='"+email+"';")
     suspended = cur.fetchone()
-    if len(suspended) > 0:
+    if suspended:
+        cur.close()
         return redirect(url_for("get_detail_auction", message="Your account has been suspended due to suspicious activity", email=email, auctionid=auctionid)) 
 
     # check if auction has ended
     cur.execute("Select * from itemlistings where itemid="+auctionid+" and auctionendtime>now();")
     auction = cur.fetchone()
-    if len(auction) == 0:
+    if not auction:
+        cur.close()
         return redirect(url_for("get_detail_auction", message="Auction has ended.", email=email, auctionid=auctionid))
     
     # select max bid and check if this bid surpasses previous bid
@@ -100,6 +103,7 @@ def make_bid():
         return redirect(url_for("get_detail_auction", message="Bid amount did not exceed previous bids.", email=email, auctionid=auctionid))
     else:
         cur.execute("Insert into offers values ("+auctionid+ "," +str(bid)+",now(),'"+email+"')")
+        conn.commit() 
         return redirect(url_for("get_detail_auction", message="Successfully placed bid", email=email, auctionid=auctionid))
 
 
@@ -113,7 +117,7 @@ def add_item():
     end_time = end_time_date + " " + end_time_time + ":00"
 
     # check if current user is suspended
-    cur.execute("select * from suspendedusers s where s.useremail='"+email+"';")
+    cur.execute("select * from suspendedusers where useremail='"+email+"';")
     suspended = cur.fetchone()
     if suspended:
         return redirect(url_for("get_all_auctions", email=email, message="Your account has been suspended due to suspicious activity."))
@@ -143,13 +147,14 @@ def add_item():
 
     # add the item
     try:
-        cur.execute("Insert into \"itemlistings\" values("+str(max_id)+",'"+str(end_time) + strftime("%z", gmtime())+"',"+ str(0) + ",'"+ item_description+ "','"+ email+ "',now() )")
+        print("Insert into itemlistings values("+str(max_id)+", '"+str(end_time) + strftime("%z", gmtime())+"', "+ str(0) + ", '"+ item_description+ "', '"+ email+ "', now() );")
+        cur.execute("Insert into itemlistings values("+str(max_id)+", '"+str(end_time) + strftime("%z", gmtime())+"', "+ str(0) + ", '"+ item_description+ "', '"+ email+ "', now() );")
     except Exception as e:
         return redirect(url_for("get_all_auctions", email=email, message=e))
 
 
 
-
+    conn.commit() 
     # add item
     return redirect(url_for("get_all_auctions", email=email, message="Successfully posted your item!"))
 
@@ -162,7 +167,7 @@ def see_history():
     # get all items that user has posted
     try:
         cur.execute("select itemid, auctionendtime, itemdescription from itemlistings where seller ='" + email + "';")
-        posted_items = cur.fetchall()
+        posted_items = cur.fetchall() 
         
 
         for i in posted_items:
@@ -184,10 +189,11 @@ def change_itemDescription():
     itemid = request.form['itemid']
 
     try:
-        cur.execute("update \"itemlistings\" set itemdescription=\'" + item_description + "\' where itemid=" + str(itemid) + "")
+        cur.execute("update \"itemlistings\" set itemdescription=\'" + item_description + "\' where itemid=" + str(itemid) + ";")
     except Exception as e:
         print(e)
 
+    conn.commit()
     return redirect(url_for("see_history", email=email))
 
 
