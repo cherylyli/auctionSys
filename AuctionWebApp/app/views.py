@@ -157,6 +157,7 @@ def add_item():
 def see_history():
     email = request.args.get('email')
     offers = {}
+    posted_items = []
 
     # get all items that user has posted
     try:
@@ -183,7 +184,7 @@ def change_itemDescription():
     itemid = request.form['itemid']
 
     try:
-        cur.execute("update \"itemlistings\" set itemdescription=\"" + item_description + "\" where itemid=" + str(itemid) + "")
+        cur.execute("update \"itemlistings\" set itemdescription=\'" + item_description + "\' where itemid=" + str(itemid) + "")
     except Exception, e:
         print(e)
 
