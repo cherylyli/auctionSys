@@ -1,10 +1,32 @@
 <html>
  	<head>
     	<title>{{ title }} - Auctions</title>
+      <style>
+        .sell{
+          float: right;
+          padding-right: 80px; 
+        }
+        input[type='text'] {
+          width: 200px;
+          height: 150px;
+        }
+      </style>
   	</head>
   	<body>
       	<h1>Here are all the currently active auctions</h1>
       	<h2>Click on one to see more</h2>
+        <div class="sell">
+          <h2>Have an item to sell? Add one!</h2>
+          <h2>{{message}}</h2>
+          <form action="/additem" method='POST'>
+          Describe the item you're selling: <br><input type="text" name="item_description"><br><br>
+          When should the auction end?<br><input type="date" name="end_time_date"><input type="time" name='end_time_time'><br><br>
+          <input type="hidden" name="email" value="{{email}}">
+          <input type="submit" value="Add your item!">
+
+          </form>
+        </div>
+
       	<table>
 	      	{% for auction in auctions %}
 
