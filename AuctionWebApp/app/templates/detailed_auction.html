@@ -1,8 +1,14 @@
 <html>
  	<head>
+  <style>
+  .navbar a{
+        padding: 5px 20px;
+      }
+  </style>
     	<title>{{ title }} - Auctions</title>
   	</head>
   	<body>
+    <div class='navbar'><a href="/history?email={{email}}">View My History</a><a href="/auctions?email={{email}}">View All Auctions</a><a href="/">Log out</a></div>
       	<h1>Auction #{{auction[0]}}</h1>
         <p>Item Description: {{auction[3]}}</p>
         <p>Auction End Time: {{auction[1]}}</p>

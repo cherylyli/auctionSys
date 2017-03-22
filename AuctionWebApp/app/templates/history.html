@@ -5,11 +5,15 @@
         width: 200px;
         height: 100px;
       }
+      .navbar a{
+        padding: 5px 20px;
+      }
 
       </style>
     	<title>{{email}}'s history</title>
   	</head>
   	<body>
+        <div class='navbar'><a href="/history?email={{email}}">View My History</a><a href="/auctions?email={{email}}">View All Auctions</a><a href="/">Log out</a></div>
       	<h1>My Info</h1>
       	<h2>Email: {{email}}</h2>
       	<h2>Items posted</h2>

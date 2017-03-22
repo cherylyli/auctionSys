@@ -28,6 +28,7 @@ def login():
     cur.execute("select * from users where users.email='"+email+"' and users.password='"+password+"';")
     user = cur.fetchall()
 
+    # if user with the password and email exists in db, log the person in.
     if len(user) == 1:
         return redirect(url_for('get_all_auctions', email=email))
     else:
@@ -36,9 +37,11 @@ def login():
 # get all auctions
 @app.route('/auctions')
 def get_all_auctions():
+    # get info on all auction items that have an end time greater than now()
     cur.execute("select itemid, auctionendtime, itemdescription from itemlistings where auctionendtime > now() order by auctionendtime;")
     auctions = cur.fetchall()
 
+    # sometimes messages are passed to this function by other functions calling this function
     email = request.args.get('email')
     message = request.args.get('message')
     if message is None:
@@ -59,6 +62,7 @@ def get_detail_auction(auctionid):
                 where o.itemid="""+auctionid+""" And own.email=i.seller and o.itemid=i.itemid order by o.time;""")
     offers = cur.fetchall()
 
+    # get the seller's average rating and email
     cur.execute("""select own.email,avgrating
                 from owners own, itemlistings i 
                 where i.itemid="""+auctionid+"""And own.email=i.seller;
@@ -153,13 +157,15 @@ def add_item():
         return redirect(url_for("get_all_auctions", email=email, message=e))
 
 
-
+    # commit changes in local cached db to remote db
     conn.commit() 
-    # add item
     return redirect(url_for("get_all_auctions", email=email, message="Successfully posted your item!"))
 
+
+# retreive user's history
 @app.route('/history')
 def see_history():
+    # retreive user's email, passed as argument from request
     email = request.args.get('email')
     offers = {}
     posted_items = []
@@ -170,6 +176,7 @@ def see_history():
         posted_items = cur.fetchall() 
         
 
+        # for each item that the use has posted, get all the offers that have been made on it
         for i in posted_items:
             print(i[0])
             print("Select amount, time, madebyuser from offers where itemid=" +str(i[0])+";")
@@ -182,17 +189,24 @@ def see_history():
 
     return render_template('history.html', email=email, posted_items=posted_items, offers=offers)
 
+
+# let user change the item description. Problem is the item description cannot have any " or ' in it. Otherwise fails.
 @app.route('/changeitemdes', methods=['POST'])
 def change_itemDescription():
+    # get parameters passed from request
     email = request.form['email']
     item_description = request.form['item_description']
     itemid = request.form['itemid']
 
+
+    # update the itemdescription for the item
     try:
         cur.execute("update \"itemlistings\" set itemdescription=\'" + item_description + "\' where itemid=" + str(itemid) + ";")
     except Exception as e:
         print(e)
 
+
+    # commit the changes from local db (cached version) to remote db
     conn.commit()
     return redirect(url_for("see_history", email=email))
 
