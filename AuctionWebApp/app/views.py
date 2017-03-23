@@ -85,6 +85,9 @@ def make_bid():
     email = request.form['email']
     bid = int(request.form['bid'])
 
+    if bid<0:
+        return redirect(url_for("get_detail_auction", message="Invalid bid number", email=email, auctionid=auctionid)) 
+
 
     # check if current user is suspended
     cur.execute("select * from suspendedusers s where s.useremail='"+email+"';")
@@ -207,17 +210,5 @@ def change_itemDescription():
     # commit the changes from local db (cached version) to remote db
     conn.commit()
     return redirect(url_for("see_history", email=email))
-
-
-
-
-
-
-
-
-
-
-
-
 
 
