@@ -90,14 +90,12 @@ def make_bid():
     cur.execute("select * from suspendedusers s where s.useremail='"+email+"';")
     suspended = cur.fetchone()
     if suspended:
-        cur.close()
         return redirect(url_for("get_detail_auction", message="Your account has been suspended due to suspicious activity", email=email, auctionid=auctionid)) 
 
     # check if auction has ended
     cur.execute("Select * from itemlistings where itemid="+auctionid+" and auctionendtime>now();")
     auction = cur.fetchone()
     if not auction:
-        cur.close()
         return redirect(url_for("get_detail_auction", message="Auction has ended.", email=email, auctionid=auctionid))
     
     # select max bid and check if this bid surpasses previous bid
