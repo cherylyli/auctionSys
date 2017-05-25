@@ -16,19 +16,22 @@ You may login with cheryl@cheryl.com with password 123 or cheryl@mail.mcgill.ca 
    
 Pages we have:
 1. Login page:  
-	-we execute a select sql query on the users table and check to see if the username and password match. ( some examples are:  username: cheryl@cheryl.com password: 123 username: nicolas.velastegui@mail.mcgill.ca password: savage ( this is a suspended user)			
-	-if they don't match we catch the exception and give an error message
-	-html input types have some restrictions that prevent malicious use.
+	- we execute a select sql query on the users table and check to see if the username and password match. ( some examples are:  username: cheryl@cheryl.com password: 123 username: nicolas.velastegui@mail.mcgill.ca password: savage ( this is a suspended user)			
+	- if they don't match we catch the exception and give an error message
+	- html input types have some restrictions that prevent malicious use.
 				
-2.All Auctions Page:    
-	-In the home directory we can see all actve itemlistings (view all auction, top of page) sorted by auction end time, this was done through a select query on all itemlistings that have an end date later then now().
-	-Also we have the option of viewing the current history of the user that is logged in
-	-We can log out bringing us back to the login page.
-	-The user can add an put an item up for auction as well. This is done through an sql insert statement, after doing checks and printing error messages if there are errors.
+2. All Auctions Page:    
+	- In the home directory we can see all actve itemlistings (view all auction, top of page) sorted by auction end time, this was done through a select query on all itemlistings that have an end date later then now().
+	- Also we have the option of viewing the current history of the user that is logged in
+	- We can log out bringing us back to the login page.
+	- The user can add an put an item up for auction as well. This is done through an sql insert statement, after doing checks and printing error messages if there are errors.
 				
-3.View history: 
-	-For the given user, we can see all the items they posted as well as the offers received for each item these are multiple sql select statments on the item(based on item id) and the offers received (based on itemid)
+3. View history: 
+	- For the given user, we can see all the items they posted as well as the offers received for each item these are multiple sql select statments on the item(based on item id) and the offers received (based on itemid)
 				
-4.Details regarding an auction:
-	-For a given auction ( click on any auction in the view all auctions page) we see the related information pertaining to the specific auction id. This information was gathered through select statements on the item id for multiple tables (itemlistings, owners and offers table).		
-	-We can also place a bid on this item. The bid must be higher then the current highest bid posted otherwise and error message will happen. This is done through an sql insert statement but only after several sql select statements are run to give the current highest bid and compare.
+4. Details regarding an auction:
+	- For a given auction ( click on any auction in the view all auctions page) we see the related information pertaining to the specific auction id. This information was gathered through select statements on the item id for multiple tables (itemlistings, owners and offers table).		
+	- We can also place a bid on this item. The bid must be higher then the current highest bid posted otherwise and error message will happen. This is done through an sql insert statement but only after several sql select statements are run to give the current highest bid and compare.
+	
+Extra Notes:
+	- No security or CSS styling because not in requirements; the purpose of this assignment is to learn to connect to a remote PostgreSQL server using a web server and execute queries.
