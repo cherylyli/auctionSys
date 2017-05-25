@@ -33,5 +33,4 @@ Pages we have:
 	- For a given auction ( click on any auction in the view all auctions page) we see the related information pertaining to the specific auction id. This information was gathered through select statements on the item id for multiple tables (itemlistings, owners and offers table).		
 	- We can also place a bid on this item. The bid must be higher then the current highest bid posted otherwise and error message will happen. This is done through an sql insert statement but only after several sql select statements are run to give the current highest bid and compare.
 	
-Extra Notes:
-	- No security or CSS styling because not in requirements; the purpose of this assignment is to learn to connect to a remote PostgreSQL server using a web server and execute queries.
+*No security or CSS styling because not in requirements; the purpose of this assignment is to learn to connect to a remote PostgreSQL server using a web server and execute queries.
